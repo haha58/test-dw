@@ -11,12 +11,20 @@ import { UserModule } from './user/user.module';
 import { OrderModule } from './order/order.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { PostModule } from './post/post.module';
+import { ModelsModule } from './models/models.module';
+import { PromptsModule } from './prompts/prompts.module';
+import { ChainsModule } from './chains/chains.module';
+import { AgentsModule } from './agents/agents.module';
 
 @Module({
   imports: [DemoModule, UserModule, OrderModule, PrismaModule, PostModule,
     ConfigModule.forRoot({
       isGlobal: true, // 👈 关键
-    }),],
+    }),
+    ModelsModule,
+    PromptsModule,
+    ChainsModule,
+    AgentsModule,],
   controllers: [AppController, TestController],
   providers: [AppService, TestService,],
 })
