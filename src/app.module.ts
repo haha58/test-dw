@@ -17,6 +17,7 @@ import { ChainsModule } from './chains/chains.module';
 import { AgentsModule } from './agents/agents.module';
 import { MemoryModule } from './memory/memory.module';
 import { RagModule } from './rag/rag.module';
+import { FunctionCallingModule } from './function-calling/function-calling.module';
 
 @Module({
   imports: [DemoModule, UserModule, OrderModule, PrismaModule, PostModule,
@@ -28,7 +29,8 @@ import { RagModule } from './rag/rag.module';
     ChainsModule,
     AgentsModule,
     MemoryModule,
-    RagModule,],
+    RagModule,
+    FunctionCallingModule,],
   controllers: [AppController, TestController],
   providers: [AppService, TestService,],
 })

@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { ChatOllama, OllamaEmbeddings } from '@langchain/ollama';
-import type { Response } from 'express'
 import { HumanMessage, SystemMessage } from '@langchain/core/messages';
 import { StringOutputParser } from '@langchain/core/output_parsers';
 import { RecursiveCharacterTextSplitter } from '@langchain/textsplitters';
@@ -8,9 +7,6 @@ import { Document } from '@langchain/core/documents';
 import { MemoryVectorStore } from '@langchain/classic/vectorstores/memory'
 import { ChatPromptTemplate, PromptTemplate, FewShotPromptTemplate } from '@langchain/core/prompts';
 import { config } from '../config'
-import { Doc } from 'zod/v4/core';
-import { success } from 'zod';
-import { retry } from 'rxjs';
 @Injectable()
 export class RagService {
     // 创建 chatOllama 实例
@@ -29,6 +25,7 @@ export class RagService {
     })
 
     // 内存向量库（null 表示未初始化）
+    // postgresql pgvector
     private vectorStore: MemoryVectorStore | null = null;
     private docCount = 0;
 
