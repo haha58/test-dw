@@ -18,6 +18,7 @@ import { AgentsModule } from './agents/agents.module';
 import { MemoryModule } from './memory/memory.module';
 import { RagModule } from './rag/rag.module';
 import { FunctionCallingModule } from './function-calling/function-calling.module';
+import { RagDbModule } from './rag-db/rag-db.module';
 
 @Module({
   imports: [DemoModule, UserModule, OrderModule, PrismaModule, PostModule,
@@ -30,7 +31,8 @@ import { FunctionCallingModule } from './function-calling/function-calling.modul
     AgentsModule,
     MemoryModule,
     RagModule,
-    FunctionCallingModule,],
+    FunctionCallingModule,
+    RagDbModule,],
   controllers: [AppController, TestController],
   providers: [AppService, TestService,],
 })

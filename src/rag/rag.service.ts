@@ -53,6 +53,7 @@ export class RagService {
                 [doc.content],
                 [{source:doc.source || doc.id, docId: doc.id}]
             )
+            // 插入数据库
             allDocs.push(...chunks);
 
         }
