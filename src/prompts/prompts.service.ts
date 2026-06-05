@@ -19,7 +19,7 @@ export class PromptsService {
     // 多消息对话模板，适合需要上下文的对话场景，模型会根据之前的消息内容进行回答
     async translate(text: string, targetLanguage: string) {
         // fromMessages 接受一个消息数组，每个消息由一个角色（system、user、assistant）和内容组成，模板中可以使用占位符 {text} 和 {targetLanguage} 来动态替换用户输入的文本和目标语言
-        const prompt = ChatPromptTemplate.fromMessages([
+        const prompt = ChatPromptTemplate.fromMessages([  //把一组多角色消息组合成一个可复用的 prompt 模板，比如 system、human、ai 等消息，然后在调用模型前动态填充变量。
             ['system', '你是一个翻译助手，,只输出翻译结果 帮助用户将文本翻译成指定的语言。'],
             ['user', '请把以下的内容翻译成 {targetLanguage}: {text}']
         ]);
@@ -65,6 +65,25 @@ export class PromptsService {
             inputVariables: ['text'],
 
         }); 
+        //提示词
+        // 请根据输入的文本内容进行情感分类，输出积极、消极或中立
+
+        // 输入：这个产品太好用了
+        // 输出：积极
+
+        // 输入：太差劲了，再也不会买了
+        // 输出：消极
+
+        // 输入：今天是星期三
+        // 输出：中立
+
+        // 输入：这家店服务很好，下次还会再来
+        // 输出：
+        
+        //提示词内容结构：
+        // 前面：任务说明
+        // 中间：几个示例
+        // 最后：真正要模型回答的新输入   
         const formattedPrompt = await fewShotPrompt.format({text:text});
         const res = await this.llm.invoke(formattedPrompt);
         return {text, label: res.content};

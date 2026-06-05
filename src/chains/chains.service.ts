@@ -32,22 +32,14 @@ export class ChainsService {
 
         // 第一条chain: article字符串 ->分析---  analysis字符串 
         const analysisChain = analysisPrompt.pipe(this.llm).pipe(new StringOutputParser());
-        // 
+        const polishChain = polishPrompt.pipe(this.llm).pipe(new StringOutputParser());
 
-        // 第1步骤chain:保留article原文， +  调用analysisChain 得到 analysis字符串 
-        // 第2步骤chain:     analysis字符串 + article字符串 ->润色后的文章字符串 polishChain
-        // RunnableSequence 可以把多个 chain 串联起来，前一个 chain 的输出会作为后一个 chain 的输入，这样就实现了多步骤的处理流程
-        // RunnableSequence 的输入是一个对象，这个对象可以包含多个属性，每个属性都可以通过 RunnablePassthrough 来保留原始输入，或者通过其他 chain 来进行处理
-        // RunnablePassthrough 是一个特殊的 chain，它会直接把输入传递给下一个 chain，而不进行任何处理，这样就可以在多步骤的流程中保留原始输入，供后续的 chain 使用
-        const fullChain= RunnableSequence.from([
-            {article: new RunnablePassthrough(), // 保留原文
-                analysis: analysisChain,
-             },  // 调用分析chain得到分析结果
-            polishPrompt.pipe(this.llm).pipe(new StringOutputParser()) // 调用润色chain得到润色结果
-        ]);
         console.log('Running full chain with article:', article);
-        const result = await fullChain.invoke({article});
-        return{ original: article, polish: result};
+
+        const analysis = await analysisChain.invoke({ article });
+        const result = await polishChain.invoke({ article, analysis });
+
+        return { original: article, polish: result };
     }
     // 顺序链 播客生成的例子 （关键词--- 大纲---文章---seo标题）
     async generateBlog(keywords: string, style: string) {

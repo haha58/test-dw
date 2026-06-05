@@ -158,6 +158,9 @@ export class AgentsService {
             new HumanMessage(message)
         ]
 
+        // history：保存多次请求之间的上下文
+        // messages：保存当前这一次请求里的上下文
+
         // 记录一下每步执行的过程（用于前端展示 调试）
         const steps: string[] = [];
         let roundCount = 0;
