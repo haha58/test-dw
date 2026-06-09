@@ -22,6 +22,7 @@ import { RagDbModule } from './rag-db/rag-db.module';
 import { FunctionCallingTestModule } from './function-calling-test/function-calling-test.module';
 import { RagTestModule } from './rag-test/rag-test.module';
 import { RagDbTestModule } from './rag-db-test/rag-db-test.module';
+import { RagDbChromaTestModule } from './rag-db-chroma-test/rag-db-chroma-test.module';
 
 @Module({
   imports: [DemoModule, UserModule, OrderModule, PrismaModule, PostModule,
@@ -38,7 +39,8 @@ import { RagDbTestModule } from './rag-db-test/rag-db-test.module';
     RagDbModule,
     FunctionCallingTestModule,
     RagTestModule,
-    RagDbTestModule,],
+    RagDbTestModule,
+    RagDbChromaTestModule,],
   controllers: [AppController, TestController],
   providers: [AppService, TestService,],
 })
