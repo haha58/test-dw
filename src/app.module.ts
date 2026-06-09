@@ -21,6 +21,7 @@ import { FunctionCallingModule } from './function-calling/function-calling.modul
 import { RagDbModule } from './rag-db/rag-db.module';
 import { FunctionCallingTestModule } from './function-calling-test/function-calling-test.module';
 import { RagTestModule } from './rag-test/rag-test.module';
+import { RagDbTestModule } from './rag-db-test/rag-db-test.module';
 
 @Module({
   imports: [DemoModule, UserModule, OrderModule, PrismaModule, PostModule,
@@ -36,7 +37,8 @@ import { RagTestModule } from './rag-test/rag-test.module';
     FunctionCallingModule,
     RagDbModule,
     FunctionCallingTestModule,
-    RagTestModule,],
+    RagTestModule,
+    RagDbTestModule,],
   controllers: [AppController, TestController],
   providers: [AppService, TestService,],
 })
