@@ -54,7 +54,7 @@ export class RagDbService {
         columns: {
             idColumnName: 'id', // 文档ID列
             vectorColumnName: 'embedding', // 向量列
-            contentCoumnName: 'content', // 文档内容列
+            contentColumnName: 'content', // 文档内容列
             metadataColumnName: 'metadata', // 元数据列，存储文档的额外信息（例如来源、文档ID等）
         },
         // 向量距离计算策略：pgvector 支持两种距离计算方式：欧氏距离（L2）和余弦相似度（COSINE）
