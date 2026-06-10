@@ -23,6 +23,8 @@ import { FunctionCallingTestModule } from './function-calling-test/function-call
 import { RagTestModule } from './rag-test/rag-test.module';
 import { RagDbTestModule } from './rag-db-test/rag-db-test.module';
 import { RagDbChromaTestModule } from './rag-db-chroma-test/rag-db-chroma-test.module';
+import { McpClientModule } from './mcp-client/mcp-client.module';
+import { McpAgentModule } from './mcp-agent/mcp-agent.module';
 
 @Module({
   imports: [DemoModule, UserModule, OrderModule, PrismaModule, PostModule,
@@ -40,7 +42,9 @@ import { RagDbChromaTestModule } from './rag-db-chroma-test/rag-db-chroma-test.m
     FunctionCallingTestModule,
     RagTestModule,
     RagDbTestModule,
-    RagDbChromaTestModule,],
+    RagDbChromaTestModule,
+    McpClientModule,
+    McpAgentModule,],
   controllers: [AppController, TestController],
   providers: [AppService, TestService,],
 })

@@ -30,7 +30,7 @@ datasource db {
 model User {
   id        Int      @id @default(autoincrement())
   email     String   @unique
-  name      String
+  name      String   @map("username")
   password  String
   role      String   @default("user")
   createdAt DateTime @default(now())
