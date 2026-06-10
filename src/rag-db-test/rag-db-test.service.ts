@@ -20,21 +20,21 @@ export class RagDbTestService {
         think: false, // 是否开启思考模式，开启后模型会先返回一个思考中的消息，等生成完成后再返回最终回答
         numPredict: 512, // 生成文本的最大 token 数量，512 是一个比较合理的值，可以根据需要调整
     });
- 
+
     // 向量化模型： 把文本转成数字向量 （用于比较相似度）
     private embeddings = new OllamaEmbeddings({
         model: config.ollama.embedModel,
         baseUrl: config.ollama.host
     })
 
-    private  pgPool=new Pool({
+    private pgPool = new Pool({
         connectionString: process.env.DATABASE_URL,
         max: 10, // 连接池最大连接数，根据实际需求调整
         idleTimeoutMillis: 30000, // 连接空闲超时时间，单位毫秒
         connectionTimeoutMillis: 2000, // 连接超时时间，单位毫秒
     })
 
-    private pgVectorConfig={
+    private pgVectorConfig = {
         pool: this.pgPool, // pg 连接池
         // 集合名称：类似命名空间： 可以隔离不同的业务的向量数据
         // 例如：rag_collection 存储RAG相关的文档向量， faq_collection 存储FAQ相关的文档向量
@@ -54,7 +54,7 @@ export class RagDbTestService {
 
 
     // 加载文档到向量库 
-    async load(documents:any[]) {
+    async load(documents: any[]) {
         const splitter = new RecursiveCharacterTextSplitter({
             chunkSize: 500,     // 每块最大字符数
             chunkOverlap: 50,   // 相邻块重叠 50 个字符
@@ -84,8 +84,8 @@ export class RagDbTestService {
             allDocs,
             this.embeddings,
             this.pgVectorConfig
-        ) 
-       
+        )
+
         return {
             success: true,
             originalDocs: documents.length,
@@ -101,7 +101,7 @@ export class RagDbTestService {
             this.pgVectorConfig
         );
         const results = await vectorStore.similaritySearchWithScore(query, topK);
-        // await vectorStore.end(); // 使用完毕后关闭连接
+        await vectorStore.end(); // 使用完毕后关闭连接
         return {
             query,
             results: results.map(([doc, score]) => ({
@@ -120,7 +120,7 @@ export class RagDbTestService {
             this.embeddings,
             this.pgVectorConfig
         );
-        
+
         if (!vectorStore) {
             return { error: '请先调用/rag/load 加载文档，文档向量化存储' }
         }
@@ -130,13 +130,15 @@ export class RagDbTestService {
             throw new BadRequestException('question 必须是非空字符串');
         }
         //余弦距离越小越接近
-        const retrieved = await vectorStore.similaritySearchWithScore(question, topK)
-        const filtered = retrieved.filter(([, score])=> score <= 0.5);
-        if(!filtered.length) {
-            return {question, answer: '知识库中没有找到相关的内容', source: []}
+        const queryWithPrefix = `Represent this sentence for searching relevant passages: ${question}`
+        const retrieved = await vectorStore.similaritySearchWithScore(queryWithPrefix, topK)
+        await vectorStore.end()
+        const filtered = retrieved.filter(([, score]) => score <= 0.5);
+        if (!filtered.length) {
+            return { question, answer: '知识库中没有找到相关的内容', source: [] }
         }
 
-        const context = filtered.map(([doc], i)=> `[${i + 1}] ${doc.pageContent}`).join('\n\n')
+        const context = filtered.map(([doc], i) => `[${i + 1}] ${doc.pageContent}`).join('\n\n')
         // setp3: RAG Prompt : 严格限制模型只能 用参考资料回答 
 
         const prompt = ChatPromptTemplate.fromMessages([
@@ -148,17 +150,17 @@ export class RagDbTestService {
                 参考资料：
                 {context}
                 `],
-                ['human', '{question}']
+            ['human', '{question}']
         ])
 
         // setp4: 调用模型生成 回答
         const chain = prompt.pipe(this.llm).pipe(new StringOutputParser())
-        const answer = await chain.invoke({context, question})
+        const answer = await chain.invoke({ context, question })
 
         return {
             question,
             answer,
-            sources: retrieved.map(([doc, score])=>({
+            sources: retrieved.map(([doc, score]) => ({
                 content: doc.pageContent,
                 source: doc.metadata.source,
                 similarity: (1 - parseFloat(score.toFixed(4))).toFixed(4), // 余弦相似度 = 1 - 余弦距离
@@ -167,13 +169,13 @@ export class RagDbTestService {
         }
     }
 
-   async getStatus() {
-    try {
-        const vectorStore = await PGVectorStore.initialize(
-            this.embeddings,
-            this.pgVectorConfig
-        );
-        
+    async getStatus() {
+        try {
+            const vectorStore = await PGVectorStore.initialize(
+                this.embeddings,
+                this.pgVectorConfig
+            );
+
             if (!vectorStore) {
                 return { error: '请先调用/rag/load 加载文档，文档向量化存储' }
             }
@@ -183,7 +185,7 @@ export class RagDbTestService {
             const docCountNum = parseInt(results.rows[0].doccount, 10);
             return {
                 loaded: !!vectorStore,
-                message: vectorStore ? `已加载${docCountNum} 篇文档`: '知识库是空的， 请先加载文档'
+                message: vectorStore ? `已加载${docCountNum} 篇文档` : '知识库是空的， 请先加载文档'
             }
         } catch (error) {
             console.error('获取状态失败:', error);
@@ -197,11 +199,11 @@ export class RagDbTestService {
     }
 
     async clearKnowledage() {
-         // 删除当前collection 下的所有向量数据和文档数据
+        // 删除当前collection 下的所有向量数据和文档数据
         await this.pgPool.query(`DELETE FROM ${this.pgVectorConfig.tableName}
             WHERE collection_id =  (SELECT uuid from ${this.pgVectorConfig.collectionTableName} WHERE name = $1)`, [this.pgVectorConfig.collectionName])
         await this.pgPool.query(`DELETE FROM ${this.pgVectorConfig.collectionTableName}
-            WHERE name = $1`, [this.pgVectorConfig.collectionName])  
-        return {success: true, message: '知识库已经清空'}
+            WHERE name = $1`, [this.pgVectorConfig.collectionName])
+        return { success: true, message: '知识库已经清空' }
     }
 }

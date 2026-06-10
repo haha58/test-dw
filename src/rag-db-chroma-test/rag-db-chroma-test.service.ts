@@ -4,30 +4,35 @@ import { ChatPromptTemplate } from '@langchain/core/prompts'
 import { Chroma } from '@langchain/community/vectorstores/chroma'
 import { ChatOllama, OllamaEmbeddings } from '@langchain/ollama'
 import { RecursiveCharacterTextSplitter } from '@langchain/textsplitters'
-import { Injectable } from '@nestjs/common'
+import { Injectable, OnModuleInit } from '@nestjs/common'
 import { ChromaClient } from 'chromadb'
 import { config } from '../config'
 
 @Injectable()
-export class RagDbChromaTestService {
-  private llm = new ChatOllama({
-    model: config.ollama.chatModel,
-    temperature: config.ollama.temperature,
-    baseUrl: config.ollama.host,
-    think: false,
-    numPredict: 512,
-  })
-
-  private embeddings = new OllamaEmbeddings({
-    model: config.ollama.embedModel,
-    baseUrl: config.ollama.host,
-  })
+export class RagDbChromaTestService implements OnModuleInit {
+  private embeddings: OllamaEmbeddings
+  private llm: ChatOllama
 
   private chromaConfig = {
     host: 'localhost',
     port: 8000,
     ssl: false,
     collectionName: 'rag-knowledge-base',
+  }
+
+  onModuleInit() {
+    this.embeddings = new OllamaEmbeddings({
+      model: config.ollama.embedModel,
+      baseUrl: config.ollama.host,
+    })
+
+    this.llm = new ChatOllama({
+      model: config.ollama.chatModel,
+      temperature: config.ollama.temperature,
+      baseUrl: config.ollama.host,
+      think: false,
+      numPredict: 512,
+    })
   }
 
   private docCount = 0
@@ -99,7 +104,8 @@ export class RagDbChromaTestService {
 
   async query(question: string, topK = 3) {
     const vectorStore = await this.getVectorStore()
-    const retrieved = await vectorStore.similaritySearchWithScore(question, topK)
+    const queryWithPrefix = `Represent this sentence for searching relevant passages: ${question}`
+    const retrieved = await vectorStore.similaritySearchWithScore(queryWithPrefix, topK)
 
     if (!retrieved.length) {
       return {
