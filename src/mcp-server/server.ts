@@ -1,6 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
+import { formatToolError } from "../common";
 import { searchUsers } from "./tools/database.tool";
 import { handleFileOperation } from "./tools/file.tool";
 import { handleWeatherQuery } from "./tools/weather.tool";
@@ -138,14 +139,6 @@ server.registerTool(
     }
   },
 );
-
-function formatToolError(error: unknown): string {
-  if (error instanceof Error) {
-    return `Tool execution failed: ${error.message}`;
-  }
-
-  return `Tool execution failed: ${String(error)}`;
-}
 
 async function main() {
   const transport = new StdioServerTransport();

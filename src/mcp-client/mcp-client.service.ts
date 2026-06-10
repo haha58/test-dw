@@ -1,6 +1,7 @@
 import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 import { StdioClientTransport } from '@modelcontextprotocol/sdk/client/stdio.js';
+import { getStringEnv, MCP_SERVER_ARGS, MCP_SERVER_COMMAND } from '../common';
 
 @Injectable()
 export class McpClientService implements OnModuleInit, OnModuleDestroy {
@@ -20,8 +21,8 @@ export class McpClientService implements OnModuleInit, OnModuleDestroy {
     );
     // stdio 模式：NestJS 以子进程方式启动 MCP Server
     this.transport = new StdioClientTransport({
-      command: 'node',
-      args: ['dist/src/mcp-server/server.js'],
+      command: MCP_SERVER_COMMAND,
+      args: MCP_SERVER_ARGS,
       // 把当前环境变量传给子进程（包含 DATABASE_URL 等）
       env: getStringEnv(),
     });
@@ -59,12 +60,4 @@ export class McpClientService implements OnModuleInit, OnModuleDestroy {
     await this.client.close();
     console.log('MCP client closed');
   }
-}
-
-function getStringEnv(): Record<string, string> {
-  return Object.fromEntries(
-    Object.entries(process.env).filter(
-      (entry): entry is [string, string] => typeof entry[1] === 'string',
-    ),
-  );
 }
