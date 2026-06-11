@@ -1,11 +1,13 @@
 import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { LanggraphService } from './service/langgraph/langgraph.service';
 import { ArticleService } from './service/article/langgraph.service';
+import { RoutingService } from './service/routing/routing.service';
 
 @Controller('langgraph')
 export class LanggraphController {
     constructor(private readonly langgraphService: LanggraphService,
-      private readonly articleService: ArticleService
+      private readonly articleService: ArticleService,
+      private readonly routingService: RoutingService
     ) {}
 
     // 工作流一：无记忆简单问答
@@ -30,5 +32,11 @@ export class LanggraphController {
     @Post('article')
     processArticle(@Body() body: { article: string }) {
       return this.articleService.process(body.article)
+    }
+
+    // 工作流四：路由流水线
+    @Post('route')
+    route(@Body() body: { input: string }) {
+      return this.routingService.handle(body.input)
     }
 }
