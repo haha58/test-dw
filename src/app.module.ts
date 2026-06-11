@@ -26,6 +26,7 @@ import { RagDbChromaTestModule } from './rag-db-chroma-test/rag-db-chroma-test.m
 import { McpClientModule } from './mcp-client/mcp-client.module';
 import { McpAgentModule } from './mcp-agent/mcp-agent.module';
 import { EmbedModule } from './embed/embed.module';
+import { LanggraphModule } from './langgraph/langgraph.module';
 
 @Module({
   imports: [DemoModule, UserModule, OrderModule, PrismaModule, PostModule,
@@ -46,7 +47,8 @@ import { EmbedModule } from './embed/embed.module';
     RagDbChromaTestModule,
     McpClientModule,
     McpAgentModule,
-    EmbedModule,],
+    EmbedModule,
+    LanggraphModule,],
   controllers: [AppController, TestController],
   providers: [AppService, TestService,],
 })
