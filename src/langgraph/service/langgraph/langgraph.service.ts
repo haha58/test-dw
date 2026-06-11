@@ -1,6 +1,6 @@
 import { ChatOllama } from '@langchain/ollama';
 import { Injectable, OnModuleInit } from '@nestjs/common'
-import { config } from '../config';
+import { config } from '../../../config';
 import { HumanMessage, SystemMessage } from 'langchain';
 import { END, MemorySaver, MessagesAnnotation, START, StateGraph } from '@langchain/langgraph';
 

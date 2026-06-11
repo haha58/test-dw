@@ -1,5 +1,5 @@
 import { Body, Controller, Get, Param, Post } from '@nestjs/common';
-import { LanggraphService } from './langgraph.service';
+import { LanggraphService } from './service/langgraph/langgraph.service';
 
 @Controller('langgraph')
 export class LanggraphController {
