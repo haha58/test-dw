@@ -4,6 +4,7 @@ import { ArticleService } from './service/article/langgraph.service';
 import { RoutingService } from './service/routing/routing.service';
 import { ParallelService } from './service/parallel/parallel.service';
 import { SupervisorService } from './service/supervisor/supervisor.service';
+import { PipelineService } from './service/pipeline/pipeline.service';
 
 @Controller('langgraph')
 export class LanggraphController {
@@ -11,7 +12,8 @@ export class LanggraphController {
       private readonly articleService: ArticleService,
       private readonly routingService: RoutingService,
       private readonly parallelService: ParallelService,
-      private readonly supervisorService: SupervisorService
+      private readonly supervisorService: SupervisorService,
+      private readonly pipelineService: PipelineService
     ) {}
 
     // 工作流一：无记忆简单问答
@@ -50,8 +52,15 @@ export class LanggraphController {
       return this.parallelService.parallelChat(body.task)
     }
 
+    // 工作流六：超级管理员流水线
     @Post('supervisor')
     supervisor(@Body() body: { input: string }) {
       return this.supervisorService.run(body.input)
+    }
+
+    // 工作流七：流水线流程
+    @Post('pipeline')
+    pipeline(@Body() body: { topic: string }) {
+      return this.pipelineService.createContent(body.topic)
     }
 }
