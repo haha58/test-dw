@@ -2,12 +2,14 @@ import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { LanggraphService } from './service/langgraph/langgraph.service';
 import { ArticleService } from './service/article/langgraph.service';
 import { RoutingService } from './service/routing/routing.service';
+import { ParallelService } from './service/parallel/parallel.service';
 
 @Controller('langgraph')
 export class LanggraphController {
     constructor(private readonly langgraphService: LanggraphService,
       private readonly articleService: ArticleService,
-      private readonly routingService: RoutingService
+      private readonly routingService: RoutingService,
+      private readonly parallelService: ParallelService
     ) {}
 
     // 工作流一：无记忆简单问答
@@ -38,5 +40,11 @@ export class LanggraphController {
     @Post('route')
     route(@Body() body: { input: string }) {
       return this.routingService.handle(body.input)
+    }
+
+    // 工作流五：并行流水线
+    @Post('parallel')
+    parallel(@Body() body: { task: string }) {
+      return this.parallelService.parallelChat(body.task)
     }
 }
