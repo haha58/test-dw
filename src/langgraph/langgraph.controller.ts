@@ -5,6 +5,7 @@ import { RoutingService } from './service/routing/routing.service';
 import { ParallelService } from './service/parallel/parallel.service';
 import { SupervisorService } from './service/supervisor/supervisor.service';
 import { PipelineService } from './service/pipeline/pipeline.service';
+import { CodeReviewService } from './service/code-review/code-review.service';
 
 @Controller('langgraph')
 export class LanggraphController {
@@ -13,7 +14,8 @@ export class LanggraphController {
       private readonly routingService: RoutingService,
       private readonly parallelService: ParallelService,
       private readonly supervisorService: SupervisorService,
-      private readonly pipelineService: PipelineService
+      private readonly pipelineService: PipelineService,
+      private readonly codeReviewService: CodeReviewService,
     ) {}
 
     // 工作流一：无记忆简单问答
@@ -62,5 +64,11 @@ export class LanggraphController {
     @Post('pipeline')
     pipeline(@Body() body: { topic: string }) {
       return this.pipelineService.createContent(body.topic)
+    }
+
+    // 工作流八：代码审查
+    @Post('code-review')
+    codeReview(@Body() body: { code: string, language: string }) {
+      return this.codeReviewService.review(body.code, body.language)
     }
 }
