@@ -3,13 +3,15 @@ import { LanggraphService } from './service/langgraph/langgraph.service';
 import { ArticleService } from './service/article/langgraph.service';
 import { RoutingService } from './service/routing/routing.service';
 import { ParallelService } from './service/parallel/parallel.service';
+import { SupervisorService } from './service/supervisor/supervisor.service';
 
 @Controller('langgraph')
 export class LanggraphController {
     constructor(private readonly langgraphService: LanggraphService,
       private readonly articleService: ArticleService,
       private readonly routingService: RoutingService,
-      private readonly parallelService: ParallelService
+      private readonly parallelService: ParallelService,
+      private readonly supervisorService: SupervisorService
     ) {}
 
     // 工作流一：无记忆简单问答
@@ -46,5 +48,10 @@ export class LanggraphController {
     @Post('parallel')
     parallel(@Body() body: { task: string }) {
       return this.parallelService.parallelChat(body.task)
+    }
+
+    @Post('supervisor')
+    supervisor(@Body() body: { input: string }) {
+      return this.supervisorService.run(body.input)
     }
 }
